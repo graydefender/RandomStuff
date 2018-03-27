@@ -1,0 +1,219 @@
+00001  0000             *=$0801
+00002  0801             
+00003  0801  0E 08 0A             BYTE    $0E,$08,$0A,$00,$9E,$20,$28,$32,$30,$36,$34,$29,$00,$00,$00
+00004  0810             
+00005  0810             ; [CODE START] ----------------------------------------------------------------
+00006  0810             
+00007  0810             *=$0810
+00008  0810             CONST_STARTLINE= $7C0
+00009  0810                       
+00010  0810             ;HTTP://DUSTLAYER.COM/VIC-II/2013/4/23/VIC-II-FOR-BEGINNERS-PART-2-TO-HAVE-OR-TO-NOT-HAVE-CHARACTER
+00011  0810             
+00012  0810             ; ***********************************************************************************
+00013  0810             ; STEP 1 REDEFINE CHAR SET
+00014  0810             ; ***********************************************************************************
+00015  0810             CHARACTER_SET
+00016  0810                       
+00017  0810  78                   SEI                                     ; DISABLE INTERRUPTS WHILE WE COPY
+00018  0811  A2 08                LDX                 #$08                ; WE LOOP 8 TIMES (8X255 = 2KB)
+00019  0813  A9 33                LDA                 #$33                ; MAKE THE CPU SEE THE CHARACTER GENERATOR ROM...
+00020  0815  85 01                STA                 $01                 ; ...AT $D000 BY STORING %00110011 INTO LOCATION $01
+00021  0817  A9 D0                LDA                 #$D0                ; LOAD HIGH BYTE OF $D000
+00022  0819  85 FC                STA                 $FC                 ; STORE IT IN A FREE LOCATION WE USE AS VECTOR
+00023  081B  A9 30                LDA                 #$30                ;
+00024  081D  85 FE                STA                 $FE                 ;
+00025  081F  A9 00                LDA                 #0                  ;
+00026  0821  85 FD                STA                 $FD
+00027  0823  A0 00                LDY                 #$00                ; INIT COUNTER WITH 0
+00028  0825  84 FB                STY                 $FB                 ; STORE IT AS LOW BYTE IN THE $FB/$FC VECTOR
+00029  0827  B1 FB      LOOP      LDA                 ($FB),Y             ; READ BYTE FROM VECTOR STORED IN $FB/$FC
+00030  0829  91 FD                STA                 ($FD),Y             ; WRITE TO THE RAM UNDER ROM AT SAME POSITION
+00031  082B  C8                   INY                                     ; DO THIS 255 TIMES...
+00032  082C  D0 F9                BNE                 LOOP                ; ..FOR LOW BYTE $00 TO $FF
+00033  082E  E6 FC                INC                 $FC                 ; WHEN WE PASSED $FF INCREASE HIGH BYTE...
+00034  0830  E6 FE                INC                 $FE
+00035  0832  CA                   DEX                                     ; ... AND DECREASE X BY ONE BEFORE RESTART
+00036  0833  D0 F2                BNE                 LOOP                ; WE REPEAT THIS UNTIL X BECOMES ZERO
+00037  0835  A9 37                LDA                 #$37                ; SWITCH IN I/O MAPPED REGISTERS AGAIN...
+00038  0837  85 01                STA                 $01                 ; ... WITH %00110111 SO CPU CAN SEE THEM
+00039  0839  58                   CLI                                    ; TURN OFF INTERRUPT DISABLE FLAG
+00040  083A  A9 1C                LDA                 #28
+00041  083C  8D 18 D0             STA                 $D018               ;
+00042  083F             
+00043  083F             ; ***********************************************************************************
+00044  083F             ; STEP 2 - INITIALIZE THE REDEFINED CHARACTERS IN CHARSET USED FOR SCROLLING, THEY
+00045  083F             ;          START AT INDEX CHARSET INDEX 64 WHICH EQUATE TO 64*8 = $200 + $3000=$3200
+00046  083F             ; ***********************************************************************************
+00047  083F  A0 00                LDY                 #$00
+00048  0841  A9 00      @INNER    LDA #0
+00049  0843  99 00 32             STA                 $3200,Y
+00050  0846  C8                   INY
+00051  0847  C0 FF                CPY                 #255
+00052  0849  D0 F6                BNE                 @INNER
+00053  084B  A0 00                LDY                 #00
+00054  084D  99 FF 32   @INNER2   STA                 $32FF,Y
+00055  0850  C8                   INY
+00056  0851  C0 42                CPY #66
+00057  0853  D0 F8                BNE                 @INNER2
+00058  0855             
+00059  0855             
+00060  0855             ; ***********************************************************************************
+00061  0855             ; STEP 3 - PUT REDEFINED CHARACTERS ON A ROW ON THE SCREEN
+00062  0855             ; ***********************************************************************************
+00063  0855             
+00064  0855  A0 00                LDY                 #0
+00065  0857  A2 40                LDX                 #64    ; CHARACTER SET OFFSET
+00066  0859  8A         @LOOP1    TXA
+00067  085A  99 C0 07             STA                 CONST_STARTLINE,Y
+00068  085D  C8                   INY
+00069  085E  E8                   INX
+00070  085F  C0 28                CPY                 #40
+00071  0861  D0 F6                BNE                 @LOOP1
+00072  0863                       
+00073  0863                       
+00074  0863             ; ***********************************************************************************
+00075  0863             ; STEP 4 - MAIN PROGRAM LOOP - START THE SHIFTING
+00076  0863             ; ***********************************************************************************
+00077  0863             
+00078  0863  A2 00                LDX                 #0
+00079  0865             @KEEPGOING
+00080  0865                       
+00081  0865  BD F9 08             LDA                 NEWMESSAGE,X
+00082  0868  F0 25                BEQ                 @DONE
+00083  086A             
+00084  086A  20 90 08             JSR                 GRAB_NEXT_CHAR
+00085  086D  8E F8 08             STX XSAVE
+00086  0870  20 B5 08             JSR                 SHIFTCHAR
+00087  0873  20 B5 08             JSR                 SHIFTCHAR
+00088  0876  20 B5 08             JSR                 SHIFTCHAR
+00089  0879  20 B5 08             JSR                 SHIFTCHAR
+00090  087C  20 B5 08             JSR                 SHIFTCHAR
+00091  087F  20 B5 08             JSR                 SHIFTCHAR
+00092  0882  20 B5 08             JSR                 SHIFTCHAR
+00093  0885  20 B5 08             JSR                 SHIFTCHAR
+00094  0888  AE F8 08             LDX XSAVE
+00095  088B  E8                   INX
+00096  088C  4C 65 08             JMP                 @KEEPGOING
+00097  088F  60         @DONE     RTS
+00098  0890                       
+00099  0890                       
+00100  0890             ; ***********************************************************************************
+00101  0890             ; SUBROUTINES GRAB NEXT CHAR
+00102  0890             ; ***********************************************************************************
+00103  0890             GRAB_NEXT_CHAR
+00104  0890  A8                   TAY
+00105  0891  B9 A0 09             LDA                 CHARHI,Y
+00106  0894  E9 02                SBC #2
+00107  0896  85 FC                STA                 $FC
+00108  0898  B9 76 09             LDA                 CHARLOW,Y
+00109  089B  85 FB                STA                 $FB
+00110  089D  A0 28                LDY                 #40
+00111  089F  B9 A0 09             LDA                 CHARHI,Y
+00112  08A2  85 FE                STA                 $FE
+00113  08A4  B9 76 09             LDA                 CHARLOW,Y
+00114  08A7  85 FD                STA                 $FD
+00115  08A9  A0 00                LDY                 #0
+00116  08AB  B1 FB      @INNER    LDA                 ($FB),Y
+00117  08AD  91 FD                STA                 ($FD),Y
+00118  08AF  C8                   INY
+00119  08B0  C0 08                CPY                 #8
+00120  08B2  D0 F7                BNE                 @INNER
+00121  08B4  60         @END_LOOP RTS
+00122  08B5             
+00123  08B5             ; ***********************************************************************************
+00124  08B5             ; SUBROUTINE  SHIFT CHAR
+00125  08B5             ; ***********************************************************************************
+00126  08B5                       
+00127  08B5             SHIFTCHAR 
+00128  08B5  20 F0 08             JSR SMOOTH_SCROLL
+00129  08B8  A2 00                LDX                 #00
+00130  08BA             @LOOP
+00131  08BA  8A                   TXA
+00132  08BB  A8                   TAY
+00133  08BC  B9 A0 09             LDA                 CHARHI,Y
+00134  08BF  85 FC                STA                 $FC
+00135  08C1  B9 76 09             LDA                 CHARLOW,Y
+00136  08C4  85 FB                STA                 $FB
+00137  08C6  C8                   INY
+00138  08C7  B9 A0 09             LDA                 CHARHI,Y
+00139  08CA  85 FE                STA                 $FE
+00140  08CC  B9 76 09             LDA                 CHARLOW,Y
+00141  08CF  85 FD                STA                 $FD
+00142  08D1  A0 07                LDY                 #7
+00143  08D3             @LOOPAB   
+00144  08D3  B1 FD                LDA                 ($FD),Y
+00145  08D5  29 80                AND                 #%10000000
+00146  08D7  D0 04                BNE                 @SEC
+00147  08D9  18         @CLC      CLC
+00148  08DA  4C DE 08             JMP @CONT
+00149  08DD  38         @SEC      SEC
+00150  08DE  B1 FB      @CONT     LDA                 ($FB),Y
+00151  08E0  2A                   ROL
+00152  08E1  91 FB                STA                 ($FB),Y
+00153  08E3  88                   DEY
+00154  08E4  C0 FF                CPY #$FF
+00155  08E6  D0 EB                BNE                 @LOOPAB
+00156  08E8  E8                   INX
+00157  08E9  D0 00                BNE @KEEPGOING
+00158  08EB  E0 29      @KEEPGOINGCPX                 #41
+00159  08ED  D0 CB                BNE @LOOP
+00160  08EF  60                   RTS
+00161  08F0             
+00162  08F0             ; ***********************************************************************************
+00163  08F0             ; SUBROUTINE  SMOOTH_SCROLL
+00164  08F0             ; ***********************************************************************************
+00165  08F0             
+00166  08F0             
+00167  08F0             SMOOTH_SCROLL
+00168  08F0             ;@W1                 BIT $D011                       ; WAIT FOR RASTER TO BE OFF SCREEN
+00169  08F0             ;                    BPL @W1
+00170  08F0             ;@W2                 BIT $D011
+00171  08F0             ;                    BMI                 @W2
+00172  08F0             
+00173  08F0             @LOOP
+00174  08F0  AD 12 D0             LDA                 $D012
+00175  08F3  C9 64                CMP #100
+00176  08F5  90 F9                BCC                 @LOOP
+00177  08F7  60                   RTS
+00178  08F8             
+00179  08F8  00         XSAVE     BYTE 00
+00180  08F9  08 05 0C   NEWMESSAGENULL 'HELLO THIS IS A MESSAGE FROM GRAY DEFENDER THIS IS MY MESSAGE WILL IT REPEAT            IT MIGHT!                           '
+00181  0976  00 08 10   CHARLOW   BYTE $00,$08,$10,$18,$20,$28,$30,$38,$40,$48,$50,$58,$60,$68,$70,$78,$80,$88,$90,$98,$A0,$A8,$B0,$B8,$C0,$C8,$D0,$D8,$E0,$E8,$F0,$F8,$00,$08,$10,$18,$20,$28,$30,$38,$40,$48
+00182  09A0  32 32 32   CHARHI    BYTE $32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$32,$33,$33,$33,$33,$33,$33,$33,$33,$33,$33
+00183  09CA             
+
+******* 9 Label(s) *******
+Character_Set = $0810 
+charhi = $09A0 
+charlow = $0976 
+grab_next_char = $0890 
+loop = $0827 
+newmessage = $08F9 
+shiftchar = $08B5 
+Smooth_Scroll = $08F0 
+xsave = $08F8 
+
+******* 1 Unused label(s) *******
+@clc
+@cont
+@done
+@end_loop
+@inner
+@inner
+@inner2
+@keepgoing
+@keepgoing
+@loop
+@loop
+@loop1
+@loopab
+@sec
+Character_Set
+
+******* 2 Variable(s) *******
+Const_StartLine  = $07C0
+tgt_c64  = $0001
+******* -12 Unused variables(s) *******
+Const_StartLine
+tgt_c64
+

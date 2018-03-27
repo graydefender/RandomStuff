@@ -1,0 +1,698 @@
+00001  0000             *=$0801
+00002  0801             
+00003  0801  0E 08 0A             BYTE    $0E,$08,$0A,$00,$9E,$20,$28,$32,$30,$36,$34,$29,$00,$00,$00
+00004  0810             
+00005  0810             ; [CODE START] ----------------------------------------------------------------
+00006  0810             
+00007  0810             *=$0810
+00008  0810             CONST_STARTLINE= $400
+00009  0810             CS        = $3000
+00010  0810                       
+00011  0810             CONST_CHAR1= CS+$200
+00012  0810             CONST_CHAR2= CS+$201
+00013  0810             CONST_CHAR3= CS+$202
+00014  0810             CONST_CHAR4= CS+$203
+00015  0810             CONST_CHAR5= CS+$204
+00016  0810             CONST_CHAR6= CS+$205
+00017  0810             CONST_CHAR7= CS+$206
+00018  0810             CONST_CHAR8= CS+$207
+00019  0810             
+00020  0810             ;HTTP://DUSTLAYER.COM/VIC-II/2013/4/23/VIC-II-FOR-BEGINNERS-PART-2-TO-HAVE-OR-TO-NOT-HAVE-CHARACTER
+00021  0810             
+00022  0810             ; ***********************************************************************************
+00023  0810             ; STEP 1 REDEFINE CHAR SET
+00024  0810             ; ***********************************************************************************
+00025  0810             
+00026  0810             CHARACTER_SET
+00027  0810  A9 93                LDA                 #$93
+00028  0812  20 D2 FF             JSR                 $FFD2
+00029  0815                       
+00030  0815  78                   SEI                                     ; DISABLE INTERRUPTS WHILE WE COPY
+00031  0816  A2 08                LDX                 #$08                ; WE LOOP 8 TIMES (8X255 = 2KB)
+00032  0818  A9 33                LDA                 #$33                ; MAKE THE CPU SEE THE CHARACTER GENERATOR ROM...
+00033  081A  85 01                STA                 $01                 ; ...AT $D000 BY STORING %00110011 INTO LOCATION $01
+00034  081C  A9 D0                LDA                 #$D0                ; LOAD HIGH BYTE OF $D000
+00035  081E  85 FC                STA                 $FC                 ; STORE IT IN A FREE LOCATION WE USE AS VECTOR
+00036  0820  A9 30                LDA                 #>CS                ;
+00037  0822  85 FE                STA                 $FE                 ;
+00038  0824  A9 00                LDA                 #0                  ;
+00039  0826  85 FD                STA                 $FD
+00040  0828  A0 00                LDY                 #$00                ; INIT COUNTER WITH 0
+00041  082A  84 FB                STY                 $FB                 ; STORE IT AS LOW BYTE IN THE $FB/$FC VECTOR
+00042  082C  B1 FB      LOOP      LDA                 ($FB),Y             ; READ BYTE FROM VECTOR STORED IN $FB/$FC
+00043  082E  91 FD                STA                 ($FD),Y             ; WRITE TO THE RAM UNDER ROM AT SAME POSITION
+00044  0830  C8                   INY                                     ; DO THIS 255 TIMES...
+00045  0831  D0 F9                BNE                 LOOP                ; ..FOR LOW BYTE $00 TO $FF
+00046  0833  E6 FC                INC                 $FC                 ; WHEN WE PASSED $FF INCREASE HIGH BYTE...
+00047  0835  E6 FE                INC                 $FE
+00048  0837  CA                   DEX                                     ; ... AND DECREASE X BY ONE BEFORE RESTART
+00049  0838  D0 F2                BNE                 LOOP                ; WE REPEAT THIS UNTIL X BECOMES ZERO
+00050  083A  A9 37                LDA                 #$37                ; SWITCH IN I/O MAPPED REGISTERS AGAIN...
+00051  083C  85 01                STA                 $01                 ; ... WITH %00110111 SO CPU CAN SEE THEM
+00052  083E  58                   CLI                                    ; TURN OFF INTERRUPT DISABLE FLAG
+00053  083F  A9 1C                LDA                 #28
+00054  0841  8D 18 D0             STA                 $D018               ;
+00055  0844             
+00056  0844             ; ***********************************************************************************
+00057  0844             ; STEP 2 INITIALIZE THE REDEFINED CHARACTERS IN CHARSET USED FOR SCROLLING, THEY
+00058  0844             ;        -START AT INDEX CHARSET INDEX 64 WHICH EQUATE TO 64*8 = $200 + $3000=$3200
+00059  0844             ; ***********************************************************************************
+00060  0844             
+00061  0844                       
+00062  0844  A0 00                LDY                 #$00
+00063  0846  A9 00      @INNER    LDA #0
+00064  0848  99 00 32             STA                 CS+$200,Y
+00065  084B  C8                   INY
+00066  084C  C0 FF                CPY                 #255
+00067  084E  D0 F6                BNE                 @INNER
+00068  0850  A0 00                LDY                 #00
+00069  0852  99 FF 32   @INNER2   STA                 $32FF,Y
+00070  0855  C8                   INY
+00071  0856  C0 42                CPY #66
+00072  0858  D0 F8                BNE                 @INNER2
+00073  085A                       
+00074  085A             ; ***********************************************************************************
+00075  085A             ; STEP 3 - DISPLAY THE REDEFINED CHARACTERS ON SCREEN
+00076  085A             ;        - IN THIS CASE IN ONE LINES ACROSS THE ENTIRE SCREEN
+00077  085A             ; ***********************************************************************************
+00078  085A             
+00079  085A  A0 00                LDY                 #0
+00080  085C  A2 40                LDX                 #64    ; CHARACTER SET OFFSET
+00081  085E  8A         @LOOP1    TXA
+00082  085F  99 00 04             STA                 CONST_STARTLINE,Y
+00083  0862  C8                   INY
+00084  0863  E8                   INX
+00085  0864  C0 28                CPY                 #40
+00086  0866  D0 F6                BNE                 @LOOP1
+00087  0868                       
+00088  0868             ; ***********************************************************************************
+00089  0868             ; STEP 4 - START SHIFTING THE REDEFINED CHARACTERS
+00090  0868             ; ***********************************************************************************
+00091  0868             
+00092  0868  A2 00                LDX                 #0
+00093  086A             @KEEPGOING
+00094  086A  BD AC 0C             LDA                 NEWMESSAGE,X
+00095  086D  F0 0A                BEQ                 @DONE
+00096  086F  20 7A 08             JSR                 GRAB_NEXT_CHAR
+00097  0872  20 A0 08             JSR                 SHIFT_ALL_CHARS
+00098  0875  E8                   INX
+00099  0876  4C 6A 08             JMP                 @KEEPGOING
+00100  0879  60         @DONE     RTS
+00101  087A                       
+00102  087A             ; ***********************************************************************************
+00103  087A             ; SUBROUTINES GRAB NEXT CHAR
+00104  087A             ; ***********************************************************************************
+00105  087A             GRAB_NEXT_CHAR
+00106  087A  A8                   TAY
+00107  087B  B9 53 0D             LDA                 CHARHI,Y
+00108  087E  38                   SEC
+00109  087F  E9 02                SBC                 #2
+00110  0881  85 FC                STA                 $FC
+00111  0883  B9 29 0D             LDA                 CHARLOW,Y
+00112  0886  85 FB                STA                 $FB
+00113  0888                       
+00114  0888  A0 28                LDY                 #40            ; # CHARS INDEX INTO CHARSET
+00115  088A  B9 53 0D             LDA                 CHARHI,Y
+00116  088D  85 FE                STA                 $FE
+00117  088F  B9 29 0D             LDA                 CHARLOW,Y
+00118  0892  85 FD                STA                 $FD
+00119  0894                       
+00120  0894  A0 00                LDY                 #0
+00121  0896  B1 FB      @INNER    LDA                 ($FB),Y       ; SOURCE CHARACTER SET
+00122  0898  91 FD                STA                 ($FD),Y       ; DEST IN REDEFINED AREA
+00123  089A  C8                   INY
+00124  089B  C0 08                CPY                 #8
+00125  089D  D0 F7                BNE                 @INNER
+00126  089F  60         @END_LOOP RTS
+00127  08A0                       
+00128  08A0             ; ***********************************************************************************
+00129  08A0             ; SUBROUTINE  SHIFT CHAR
+00130  08A0             ; ***********************************************************************************
+00131  08A0                       
+00132  08A0             SHIFT_ALL_CHARS
+00133  08A0  20 B9 08             JSR                 SHIFT_ONCE
+00134  08A3  20 B9 08             JSR                 SHIFT_ONCE
+00135  08A6  20 B9 08             JSR                 SHIFT_ONCE
+00136  08A9  20 B9 08             JSR                 SHIFT_ONCE
+00137  08AC  20 B9 08             JSR                 SHIFT_ONCE
+00138  08AF  20 B9 08             JSR                 SHIFT_ONCE
+00139  08B2  20 B9 08             JSR                 SHIFT_ONCE
+00140  08B5  20 B9 08             JSR                 SHIFT_ONCE
+00141  08B8  60                   RTS
+00142  08B9             SHIFT_ONCE
+00143  08B9  20 95 0C             JSR SMOOTH_SCROLL
+00144  08BC                       ;JSR DELAY
+00145  08BC             
+00146  08BC             
+00147  08BC                       
+00148  08BC  2E 47 33             ROL                 CONST_CHAR8+320
+00149  08BF  2E 3F 33             ROL                 CONST_CHAR8+312
+00150  08C2  2E 37 33             ROL                 CONST_CHAR8+304
+00151  08C5  2E 2F 33             ROL                 CONST_CHAR8+296
+00152  08C8  2E 27 33             ROL                 CONST_CHAR8+288
+00153  08CB  2E 1F 33             ROL                 CONST_CHAR8+280
+00154  08CE  2E 17 33             ROL                 CONST_CHAR8+272
+00155  08D1  2E 0F 33             ROL                 CONST_CHAR8+264
+00156  08D4  2E 07 33             ROL                 CONST_CHAR8+256
+00157  08D7  2E FF 32             ROL                 CONST_CHAR8+248
+00158  08DA  2E F7 32             ROL                 CONST_CHAR8+240
+00159  08DD  2E EF 32             ROL                 CONST_CHAR8+232
+00160  08E0  2E E7 32             ROL                 CONST_CHAR8+224
+00161  08E3  2E DF 32             ROL                 CONST_CHAR8+216
+00162  08E6  2E D7 32             ROL                 CONST_CHAR8+208
+00163  08E9  2E CF 32             ROL                 CONST_CHAR8+200
+00164  08EC  2E C7 32             ROL                 CONST_CHAR8+192
+00165  08EF  2E BF 32             ROL                 CONST_CHAR8+184
+00166  08F2  2E B7 32             ROL                 CONST_CHAR8+176
+00167  08F5  2E AF 32             ROL                 CONST_CHAR8+168
+00168  08F8  2E A7 32             ROL                 CONST_CHAR8+160
+00169  08FB  2E 9F 32             ROL                 CONST_CHAR8+152
+00170  08FE  2E 97 32             ROL                 CONST_CHAR8+144
+00171  0901  2E 8F 32             ROL                 CONST_CHAR8+136
+00172  0904  2E 87 32             ROL                 CONST_CHAR8+128
+00173  0907  2E 7F 32             ROL                 CONST_CHAR8+120
+00174  090A  2E 77 32             ROL                 CONST_CHAR8+112
+00175  090D  2E 6F 32             ROL                 CONST_CHAR8+104
+00176  0910  2E 67 32             ROL                 CONST_CHAR8+96
+00177  0913  2E 5F 32             ROL                 CONST_CHAR8+88
+00178  0916  2E 57 32             ROL                 CONST_CHAR8+80
+00179  0919  2E 4F 32             ROL                 CONST_CHAR8+72
+00180  091C  2E 47 32             ROL                 CONST_CHAR8+64
+00181  091F  2E 3F 32             ROL                 CONST_CHAR8+56
+00182  0922  2E 37 32             ROL                 CONST_CHAR8+48
+00183  0925  2E 2F 32             ROL                 CONST_CHAR8+40
+00184  0928  2E 27 32             ROL                 CONST_CHAR8+32
+00185  092B  2E 1F 32             ROL                 CONST_CHAR8+24
+00186  092E  2E 17 32             ROL                 CONST_CHAR8+16
+00187  0931  2E 0F 32             ROL                 CONST_CHAR8+8
+00188  0934  2E 07 32             ROL                 CONST_CHAR8
+00189  0937             
+00190  0937             
+00191  0937             
+00192  0937             
+00193  0937                       
+00194  0937  2E 46 33             ROL                 CONST_CHAR7+320
+00195  093A  2E 3E 33             ROL                 CONST_CHAR7+312
+00196  093D  2E 36 33             ROL                 CONST_CHAR7+304
+00197  0940  2E 2E 33             ROL                 CONST_CHAR7+296
+00198  0943  2E 26 33             ROL                 CONST_CHAR7+288
+00199  0946  2E 1E 33             ROL                 CONST_CHAR7+280
+00200  0949  2E 16 33             ROL                 CONST_CHAR7+272
+00201  094C  2E 0E 33             ROL                 CONST_CHAR7+264
+00202  094F  2E 06 33             ROL                 CONST_CHAR7+256
+00203  0952  2E FE 32             ROL                 CONST_CHAR7+248
+00204  0955  2E F6 32             ROL                 CONST_CHAR7+240
+00205  0958  2E EE 32             ROL                 CONST_CHAR7+232
+00206  095B  2E E6 32             ROL                 CONST_CHAR7+224
+00207  095E  2E DE 32             ROL                 CONST_CHAR7+216
+00208  0961  2E D6 32             ROL                 CONST_CHAR7+208
+00209  0964  2E CE 32             ROL                 CONST_CHAR7+200
+00210  0967  2E C6 32             ROL                 CONST_CHAR7+192
+00211  096A  2E BE 32             ROL                 CONST_CHAR7+184
+00212  096D  2E B6 32             ROL                 CONST_CHAR7+176
+00213  0970  2E AE 32             ROL                 CONST_CHAR7+168
+00214  0973  2E A6 32             ROL                 CONST_CHAR7+160
+00215  0976  2E 9E 32             ROL                 CONST_CHAR7+152
+00216  0979  2E 96 32             ROL                 CONST_CHAR7+144
+00217  097C  2E 8E 32             ROL                 CONST_CHAR7+136
+00218  097F  2E 86 32             ROL                 CONST_CHAR7+128
+00219  0982  2E 7E 32             ROL                 CONST_CHAR7+120
+00220  0985  2E 76 32             ROL                 CONST_CHAR7+112
+00221  0988  2E 6E 32             ROL                 CONST_CHAR7+104
+00222  098B  2E 66 32             ROL                 CONST_CHAR7+96
+00223  098E  2E 5E 32             ROL                 CONST_CHAR7+88
+00224  0991  2E 56 32             ROL                 CONST_CHAR7+80
+00225  0994  2E 4E 32             ROL                 CONST_CHAR7+72
+00226  0997  2E 46 32             ROL                 CONST_CHAR7+64
+00227  099A  2E 3E 32             ROL                 CONST_CHAR7+56
+00228  099D  2E 36 32             ROL                 CONST_CHAR7+48
+00229  09A0  2E 2E 32             ROL                 CONST_CHAR7+40
+00230  09A3  2E 26 32             ROL                 CONST_CHAR7+32
+00231  09A6  2E 1E 32             ROL                 CONST_CHAR7+24
+00232  09A9  2E 16 32             ROL                 CONST_CHAR7+16
+00233  09AC  2E 0E 32             ROL                 CONST_CHAR7+8
+00234  09AF  2E 06 32             ROL                 CONST_CHAR7
+00235  09B2             
+00236  09B2             
+00237  09B2             
+00238  09B2             
+00239  09B2                       
+00240  09B2  2E 45 33             ROL                 CONST_CHAR6+320
+00241  09B5  2E 3D 33             ROL                 CONST_CHAR6+312
+00242  09B8  2E 35 33             ROL                 CONST_CHAR6+304
+00243  09BB  2E 2D 33             ROL                 CONST_CHAR6+296
+00244  09BE  2E 25 33             ROL                 CONST_CHAR6+288
+00245  09C1  2E 1D 33             ROL                 CONST_CHAR6+280
+00246  09C4  2E 15 33             ROL                 CONST_CHAR6+272
+00247  09C7  2E 0D 33             ROL                 CONST_CHAR6+264
+00248  09CA  2E 05 33             ROL                 CONST_CHAR6+256
+00249  09CD  2E FD 32             ROL                 CONST_CHAR6+248
+00250  09D0  2E F5 32             ROL                 CONST_CHAR6+240
+00251  09D3  2E ED 32             ROL                 CONST_CHAR6+232
+00252  09D6  2E E5 32             ROL                 CONST_CHAR6+224
+00253  09D9  2E DD 32             ROL                 CONST_CHAR6+216
+00254  09DC  2E D5 32             ROL                 CONST_CHAR6+208
+00255  09DF  2E CD 32             ROL                 CONST_CHAR6+200
+00256  09E2  2E C5 32             ROL                 CONST_CHAR6+192
+00257  09E5  2E BD 32             ROL                 CONST_CHAR6+184
+00258  09E8  2E B5 32             ROL                 CONST_CHAR6+176
+00259  09EB  2E AD 32             ROL                 CONST_CHAR6+168
+00260  09EE  2E A5 32             ROL                 CONST_CHAR6+160
+00261  09F1  2E 9D 32             ROL                 CONST_CHAR6+152
+00262  09F4  2E 95 32             ROL                 CONST_CHAR6+144
+00263  09F7  2E 8D 32             ROL                 CONST_CHAR6+136
+00264  09FA  2E 85 32             ROL                 CONST_CHAR6+128
+00265  09FD  2E 7D 32             ROL                 CONST_CHAR6+120
+00266  0A00  2E 75 32             ROL                 CONST_CHAR6+112
+00267  0A03  2E 6D 32             ROL                 CONST_CHAR6+104
+00268  0A06  2E 65 32             ROL                 CONST_CHAR6+96
+00269  0A09  2E 5D 32             ROL                 CONST_CHAR6+88
+00270  0A0C  2E 55 32             ROL                 CONST_CHAR6+80
+00271  0A0F  2E 4D 32             ROL                 CONST_CHAR6+72
+00272  0A12  2E 45 32             ROL                 CONST_CHAR6+64
+00273  0A15  2E 3D 32             ROL                 CONST_CHAR6+56
+00274  0A18  2E 35 32             ROL                 CONST_CHAR6+48
+00275  0A1B  2E 2D 32             ROL                 CONST_CHAR6+40
+00276  0A1E  2E 25 32             ROL                 CONST_CHAR6+32
+00277  0A21  2E 1D 32             ROL                 CONST_CHAR6+24
+00278  0A24  2E 15 32             ROL                 CONST_CHAR6+16
+00279  0A27  2E 0D 32             ROL                 CONST_CHAR6+8
+00280  0A2A  2E 05 32             ROL                 CONST_CHAR6
+00281  0A2D             
+00282  0A2D             
+00283  0A2D             
+00284  0A2D             
+00285  0A2D                       
+00286  0A2D  2E 44 33             ROL                 CONST_CHAR5+320
+00287  0A30  2E 3C 33             ROL                 CONST_CHAR5+312
+00288  0A33  2E 34 33             ROL                 CONST_CHAR5+304
+00289  0A36  2E 2C 33             ROL                 CONST_CHAR5+296
+00290  0A39  2E 24 33             ROL                 CONST_CHAR5+288
+00291  0A3C  2E 1C 33             ROL                 CONST_CHAR5+280
+00292  0A3F  2E 14 33             ROL                 CONST_CHAR5+272
+00293  0A42  2E 0C 33             ROL                 CONST_CHAR5+264
+00294  0A45  2E 04 33             ROL                 CONST_CHAR5+256
+00295  0A48  2E FC 32             ROL                 CONST_CHAR5+248
+00296  0A4B  2E F4 32             ROL                 CONST_CHAR5+240
+00297  0A4E  2E EC 32             ROL                 CONST_CHAR5+232
+00298  0A51  2E E4 32             ROL                 CONST_CHAR5+224
+00299  0A54  2E DC 32             ROL                 CONST_CHAR5+216
+00300  0A57  2E D4 32             ROL                 CONST_CHAR5+208
+00301  0A5A  2E CC 32             ROL                 CONST_CHAR5+200
+00302  0A5D  2E C4 32             ROL                 CONST_CHAR5+192
+00303  0A60  2E BC 32             ROL                 CONST_CHAR5+184
+00304  0A63  2E B4 32             ROL                 CONST_CHAR5+176
+00305  0A66  2E AC 32             ROL                 CONST_CHAR5+168
+00306  0A69  2E A4 32             ROL                 CONST_CHAR5+160
+00307  0A6C  2E 9C 32             ROL                 CONST_CHAR5+152
+00308  0A6F  2E 94 32             ROL                 CONST_CHAR5+144
+00309  0A72  2E 8C 32             ROL                 CONST_CHAR5+136
+00310  0A75  2E 84 32             ROL                 CONST_CHAR5+128
+00311  0A78  2E 7C 32             ROL                 CONST_CHAR5+120
+00312  0A7B  2E 74 32             ROL                 CONST_CHAR5+112
+00313  0A7E  2E 6C 32             ROL                 CONST_CHAR5+104
+00314  0A81  2E 64 32             ROL                 CONST_CHAR5+96
+00315  0A84  2E 5C 32             ROL                 CONST_CHAR5+88
+00316  0A87  2E 54 32             ROL                 CONST_CHAR5+80
+00317  0A8A  2E 4C 32             ROL                 CONST_CHAR5+72
+00318  0A8D  2E 44 32             ROL                 CONST_CHAR5+64
+00319  0A90  2E 3C 32             ROL                 CONST_CHAR5+56
+00320  0A93  2E 34 32             ROL                 CONST_CHAR5+48
+00321  0A96  2E 2C 32             ROL                 CONST_CHAR5+40
+00322  0A99  2E 24 32             ROL                 CONST_CHAR5+32
+00323  0A9C  2E 1C 32             ROL                 CONST_CHAR5+24
+00324  0A9F  2E 14 32             ROL                 CONST_CHAR5+16
+00325  0AA2  2E 0C 32             ROL                 CONST_CHAR5+8
+00326  0AA5  2E 04 32             ROL                 CONST_CHAR5
+00327  0AA8             
+00328  0AA8             
+00329  0AA8             
+00330  0AA8             
+00331  0AA8                       
+00332  0AA8  2E 43 33             ROL                 CONST_CHAR4+320
+00333  0AAB  2E 3B 33             ROL                 CONST_CHAR4+312
+00334  0AAE  2E 33 33             ROL                 CONST_CHAR4+304
+00335  0AB1  2E 2B 33             ROL                 CONST_CHAR4+296
+00336  0AB4  2E 23 33             ROL                 CONST_CHAR4+288
+00337  0AB7  2E 1B 33             ROL                 CONST_CHAR4+280
+00338  0ABA  2E 13 33             ROL                 CONST_CHAR4+272
+00339  0ABD  2E 0B 33             ROL                 CONST_CHAR4+264
+00340  0AC0  2E 03 33             ROL                 CONST_CHAR4+256
+00341  0AC3  2E FB 32             ROL                 CONST_CHAR4+248
+00342  0AC6  2E F3 32             ROL                 CONST_CHAR4+240
+00343  0AC9  2E EB 32             ROL                 CONST_CHAR4+232
+00344  0ACC  2E E3 32             ROL                 CONST_CHAR4+224
+00345  0ACF  2E DB 32             ROL                 CONST_CHAR4+216
+00346  0AD2  2E D3 32             ROL                 CONST_CHAR4+208
+00347  0AD5  2E CB 32             ROL                 CONST_CHAR4+200
+00348  0AD8  2E C3 32             ROL                 CONST_CHAR4+192
+00349  0ADB  2E BB 32             ROL                 CONST_CHAR4+184
+00350  0ADE  2E B3 32             ROL                 CONST_CHAR4+176
+00351  0AE1  2E AB 32             ROL                 CONST_CHAR4+168
+00352  0AE4  2E A3 32             ROL                 CONST_CHAR4+160
+00353  0AE7  2E 9B 32             ROL                 CONST_CHAR4+152
+00354  0AEA  2E 93 32             ROL                 CONST_CHAR4+144
+00355  0AED  2E 8B 32             ROL                 CONST_CHAR4+136
+00356  0AF0  2E 83 32             ROL                 CONST_CHAR4+128
+00357  0AF3  2E 7B 32             ROL                 CONST_CHAR4+120
+00358  0AF6  2E 73 32             ROL                 CONST_CHAR4+112
+00359  0AF9  2E 6B 32             ROL                 CONST_CHAR4+104
+00360  0AFC  2E 63 32             ROL                 CONST_CHAR4+96
+00361  0AFF  2E 5B 32             ROL                 CONST_CHAR4+88
+00362  0B02  2E 53 32             ROL                 CONST_CHAR4+80
+00363  0B05  2E 4B 32             ROL                 CONST_CHAR4+72
+00364  0B08  2E 43 32             ROL                 CONST_CHAR4+64
+00365  0B0B  2E 3B 32             ROL                 CONST_CHAR4+56
+00366  0B0E  2E 33 32             ROL                 CONST_CHAR4+48
+00367  0B11  2E 2B 32             ROL                 CONST_CHAR4+40
+00368  0B14  2E 23 32             ROL                 CONST_CHAR4+32
+00369  0B17  2E 1B 32             ROL                 CONST_CHAR4+24
+00370  0B1A  2E 13 32             ROL                 CONST_CHAR4+16
+00371  0B1D  2E 0B 32             ROL                 CONST_CHAR4+8
+00372  0B20  2E 03 32             ROL                 CONST_CHAR4
+00373  0B23             
+00374  0B23             
+00375  0B23             
+00376  0B23             
+00377  0B23                       
+00378  0B23  2E 42 33             ROL                 CONST_CHAR3+320
+00379  0B26  2E 3A 33             ROL                 CONST_CHAR3+312
+00380  0B29  2E 32 33             ROL                 CONST_CHAR3+304
+00381  0B2C  2E 2A 33             ROL                 CONST_CHAR3+296
+00382  0B2F  2E 22 33             ROL                 CONST_CHAR3+288
+00383  0B32  2E 1A 33             ROL                 CONST_CHAR3+280
+00384  0B35  2E 12 33             ROL                 CONST_CHAR3+272
+00385  0B38  2E 0A 33             ROL                 CONST_CHAR3+264
+00386  0B3B  2E 02 33             ROL                 CONST_CHAR3+256
+00387  0B3E  2E FA 32             ROL                 CONST_CHAR3+248
+00388  0B41  2E F2 32             ROL                 CONST_CHAR3+240
+00389  0B44  2E EA 32             ROL                 CONST_CHAR3+232
+00390  0B47  2E E2 32             ROL                 CONST_CHAR3+224
+00391  0B4A  2E DA 32             ROL                 CONST_CHAR3+216
+00392  0B4D  2E D2 32             ROL                 CONST_CHAR3+208
+00393  0B50  2E CA 32             ROL                 CONST_CHAR3+200
+00394  0B53  2E C2 32             ROL                 CONST_CHAR3+192
+00395  0B56  2E BA 32             ROL                 CONST_CHAR3+184
+00396  0B59  2E B2 32             ROL                 CONST_CHAR3+176
+00397  0B5C  2E AA 32             ROL                 CONST_CHAR3+168
+00398  0B5F  2E A2 32             ROL                 CONST_CHAR3+160
+00399  0B62  2E 9A 32             ROL                 CONST_CHAR3+152
+00400  0B65  2E 92 32             ROL                 CONST_CHAR3+144
+00401  0B68  2E 8A 32             ROL                 CONST_CHAR3+136
+00402  0B6B  2E 82 32             ROL                 CONST_CHAR3+128
+00403  0B6E  2E 7A 32             ROL                 CONST_CHAR3+120
+00404  0B71  2E 72 32             ROL                 CONST_CHAR3+112
+00405  0B74  2E 6A 32             ROL                 CONST_CHAR3+104
+00406  0B77  2E 62 32             ROL                 CONST_CHAR3+96
+00407  0B7A  2E 5A 32             ROL                 CONST_CHAR3+88
+00408  0B7D  2E 52 32             ROL                 CONST_CHAR3+80
+00409  0B80  2E 4A 32             ROL                 CONST_CHAR3+72
+00410  0B83  2E 42 32             ROL                 CONST_CHAR3+64
+00411  0B86  2E 3A 32             ROL                 CONST_CHAR3+56
+00412  0B89  2E 32 32             ROL                 CONST_CHAR3+48
+00413  0B8C  2E 2A 32             ROL                 CONST_CHAR3+40
+00414  0B8F  2E 22 32             ROL                 CONST_CHAR3+32
+00415  0B92  2E 1A 32             ROL                 CONST_CHAR3+24
+00416  0B95  2E 12 32             ROL                 CONST_CHAR3+16
+00417  0B98  2E 0A 32             ROL                 CONST_CHAR3+8
+00418  0B9B  2E 02 32             ROL                 CONST_CHAR3
+00419  0B9E             
+00420  0B9E             
+00421  0B9E             
+00422  0B9E             
+00423  0B9E                       
+00424  0B9E  2E 41 33             ROL                 CONST_CHAR2+320
+00425  0BA1  2E 39 33             ROL                 CONST_CHAR2+312
+00426  0BA4  2E 31 33             ROL                 CONST_CHAR2+304
+00427  0BA7  2E 29 33             ROL                 CONST_CHAR2+296
+00428  0BAA  2E 21 33             ROL                 CONST_CHAR2+288
+00429  0BAD  2E 19 33             ROL                 CONST_CHAR2+280
+00430  0BB0  2E 11 33             ROL                 CONST_CHAR2+272
+00431  0BB3  2E 09 33             ROL                 CONST_CHAR2+264
+00432  0BB6  2E 01 33             ROL                 CONST_CHAR2+256
+00433  0BB9  2E F9 32             ROL                 CONST_CHAR2+248
+00434  0BBC  2E F1 32             ROL                 CONST_CHAR2+240
+00435  0BBF  2E E9 32             ROL                 CONST_CHAR2+232
+00436  0BC2  2E E1 32             ROL                 CONST_CHAR2+224
+00437  0BC5  2E D9 32             ROL                 CONST_CHAR2+216
+00438  0BC8  2E D1 32             ROL                 CONST_CHAR2+208
+00439  0BCB  2E C9 32             ROL                 CONST_CHAR2+200
+00440  0BCE  2E C1 32             ROL                 CONST_CHAR2+192
+00441  0BD1  2E B9 32             ROL                 CONST_CHAR2+184
+00442  0BD4  2E B1 32             ROL                 CONST_CHAR2+176
+00443  0BD7  2E A9 32             ROL                 CONST_CHAR2+168
+00444  0BDA  2E A1 32             ROL                 CONST_CHAR2+160
+00445  0BDD  2E 99 32             ROL                 CONST_CHAR2+152
+00446  0BE0  2E 91 32             ROL                 CONST_CHAR2+144
+00447  0BE3  2E 89 32             ROL                 CONST_CHAR2+136
+00448  0BE6  2E 81 32             ROL                 CONST_CHAR2+128
+00449  0BE9  2E 79 32             ROL                 CONST_CHAR2+120
+00450  0BEC  2E 71 32             ROL                 CONST_CHAR2+112
+00451  0BEF  2E 69 32             ROL                 CONST_CHAR2+104
+00452  0BF2  2E 61 32             ROL                 CONST_CHAR2+96
+00453  0BF5  2E 59 32             ROL                 CONST_CHAR2+88
+00454  0BF8  2E 51 32             ROL                 CONST_CHAR2+80
+00455  0BFB  2E 49 32             ROL                 CONST_CHAR2+72
+00456  0BFE  2E 41 32             ROL                 CONST_CHAR2+64
+00457  0C01  2E 39 32             ROL                 CONST_CHAR2+56
+00458  0C04  2E 31 32             ROL                 CONST_CHAR2+48
+00459  0C07  2E 29 32             ROL                 CONST_CHAR2+40
+00460  0C0A  2E 21 32             ROL                 CONST_CHAR2+32
+00461  0C0D  2E 19 32             ROL                 CONST_CHAR2+24
+00462  0C10  2E 11 32             ROL                 CONST_CHAR2+16
+00463  0C13  2E 09 32             ROL                 CONST_CHAR2+8
+00464  0C16  2E 01 32             ROL                 CONST_CHAR2
+00465  0C19             
+00466  0C19             
+00467  0C19             
+00468  0C19             
+00469  0C19                       
+00470  0C19  2E 40 33             ROL                 CONST_CHAR1+320
+00471  0C1C  2E 38 33             ROL                 CONST_CHAR1+312
+00472  0C1F  2E 30 33             ROL                 CONST_CHAR1+304
+00473  0C22  2E 28 33             ROL                 CONST_CHAR1+296
+00474  0C25  2E 20 33             ROL                 CONST_CHAR1+288
+00475  0C28  2E 18 33             ROL                 CONST_CHAR1+280
+00476  0C2B  2E 10 33             ROL                 CONST_CHAR1+272
+00477  0C2E  2E 08 33             ROL                 CONST_CHAR1+264
+00478  0C31  2E 00 33             ROL                 CONST_CHAR1+256
+00479  0C34  2E F8 32             ROL                 CONST_CHAR1+248
+00480  0C37  2E F0 32             ROL                 CONST_CHAR1+240
+00481  0C3A  2E E8 32             ROL                 CONST_CHAR1+232
+00482  0C3D  2E E0 32             ROL                 CONST_CHAR1+224
+00483  0C40  2E D8 32             ROL                 CONST_CHAR1+216
+00484  0C43  2E D0 32             ROL                 CONST_CHAR1+208
+00485  0C46  2E C8 32             ROL                 CONST_CHAR1+200
+00486  0C49  2E C0 32             ROL                 CONST_CHAR1+192
+00487  0C4C  2E B8 32             ROL                 CONST_CHAR1+184
+00488  0C4F  2E B0 32             ROL                 CONST_CHAR1+176
+00489  0C52  2E A8 32             ROL                 CONST_CHAR1+168
+00490  0C55  2E A0 32             ROL                 CONST_CHAR1+160
+00491  0C58  2E 98 32             ROL                 CONST_CHAR1+152
+00492  0C5B  2E 90 32             ROL                 CONST_CHAR1+144
+00493  0C5E  2E 88 32             ROL                 CONST_CHAR1+136
+00494  0C61  2E 80 32             ROL                 CONST_CHAR1+128
+00495  0C64  2E 78 32             ROL                 CONST_CHAR1+120
+00496  0C67  2E 70 32             ROL                 CONST_CHAR1+112
+00497  0C6A  2E 68 32             ROL                 CONST_CHAR1+104
+00498  0C6D  2E 60 32             ROL                 CONST_CHAR1+96
+00499  0C70  2E 58 32             ROL                 CONST_CHAR1+88
+00500  0C73  2E 50 32             ROL                 CONST_CHAR1+80
+00501  0C76  2E 48 32             ROL                 CONST_CHAR1+72
+00502  0C79  2E 40 32             ROL                 CONST_CHAR1+64
+00503  0C7C  2E 38 32             ROL                 CONST_CHAR1+56
+00504  0C7F  2E 30 32             ROL                 CONST_CHAR1+48
+00505  0C82  2E 28 32             ROL                 CONST_CHAR1+40
+00506  0C85  2E 20 32             ROL                 CONST_CHAR1+32
+00507  0C88  2E 18 32             ROL                 CONST_CHAR1+24
+00508  0C8B  2E 10 32             ROL                 CONST_CHAR1+16
+00509  0C8E  2E 08 32             ROL                 CONST_CHAR1+8
+00510  0C91  2E 00 32             ROL                 CONST_CHAR1
+00511  0C94             
+00512  0C94             
+00513  0C94  60                   RTS
+00514  0C95             
+00515  0C95             
+00516  0C95             
+00517  0C95             ; ***********************************************************************************
+00518  0C95             ; SUBROUTINE  SMOOTH_SCROLL
+00519  0C95             ; ***********************************************************************************
+00520  0C95             
+00521  0C95             SMOOTH_SCROLL
+00522  0C95             ;@W1                 BIT $D011                       ; WAIT FOR RASTER TO BE OFF SCREEN
+00523  0C95             ;                    BPL @W1
+00524  0C95             ;@W2                 BIT $D011
+00525  0C95             ;                    BMI                 @W2
+00526  0C95             
+00527  0C95             @LOOP
+00528  0C95  AD 12 D0             LDA                 $D012
+00529  0C98  C9 C8                CMP #200
+00530  0C9A  90 F9                BCC                 @LOOP
+00531  0C9C  60                   RTS
+00532  0C9D             
+00533  0C9D             DELAY
+00534  0C9D  8A                   TXA
+00535  0C9E  48                   PHA
+00536  0C9F  A0 05                LDY #5
+00537  0CA1  A2 00      @LOOP2    LDX                 #0
+00538  0CA3  CA         @LOOP     DEX
+00539  0CA4  D0 FD                BNE                 @LOOP
+00540  0CA6  88                   DEY
+00541  0CA7  D0 F8                BNE                 @LOOP2
+00542  0CA9  68                   PLA
+00543  0CAA  AA                   TAX
+00544  0CAB  60                   RTS
+00545  0CAC             
+00546  0CAC             ; ***********************************************************************************
+00547  0CAC             ; MACRO: ROTATELINE
+00548  0CAC             ;        SHIFT AN ENTIRE ROW 40 CHARACTERS OVER ONE BIT
+00549  0CAC             ;        STARTING FROM THE RIGHT THEN ADVANCING LEFT
+00550  0CAC             ; ***********************************************************************************
+00551  0CAC             DEFM      ROTATELINE
+00552  0CAC                       
+00553  0CAC                       ROL                 /1+320
+00554  0CAC                       ROL                 /1+312
+00555  0CAC                       ROL                 /1+304
+00556  0CAC                       ROL                 /1+296
+00557  0CAC                       ROL                 /1+288
+00558  0CAC                       ROL                 /1+280
+00559  0CAC                       ROL                 /1+272
+00560  0CAC                       ROL                 /1+264
+00561  0CAC                       ROL                 /1+256
+00562  0CAC                       ROL                 /1+248
+00563  0CAC                       ROL                 /1+240
+00564  0CAC                       ROL                 /1+232
+00565  0CAC                       ROL                 /1+224
+00566  0CAC                       ROL                 /1+216
+00567  0CAC                       ROL                 /1+208
+00568  0CAC                       ROL                 /1+200
+00569  0CAC                       ROL                 /1+192
+00570  0CAC                       ROL                 /1+184
+00571  0CAC                       ROL                 /1+176
+00572  0CAC                       ROL                 /1+168
+00573  0CAC                       ROL                 /1+160
+00574  0CAC                       ROL                 /1+152
+00575  0CAC                       ROL                 /1+144
+00576  0CAC                       ROL                 /1+136
+00577  0CAC                       ROL                 /1+128
+00578  0CAC                       ROL                 /1+120
+00579  0CAC                       ROL                 /1+112
+00580  0CAC                       ROL                 /1+104
+00581  0CAC                       ROL                 /1+96
+00582  0CAC                       ROL                 /1+88
+00583  0CAC                       ROL                 /1+80
+00584  0CAC                       ROL                 /1+72
+00585  0CAC                       ROL                 /1+64
+00586  0CAC                       ROL                 /1+56
+00587  0CAC                       ROL                 /1+48
+00588  0CAC                       ROL                 /1+40
+00589  0CAC                       ROL                 /1+32
+00590  0CAC                       ROL                 /1+24
+00591  0CAC                       ROL                 /1+16
+00592  0CAC                       ROL                 /1+8
+00593  0CAC                       ROL                 /1
+00594  0CAC             
+00595  0CAC             ;                    ROL                 /1
+00596  0CAC             ;                    ROL                 /1+8
+00597  0CAC             ;                    ROL                 /1+16
+00598  0CAC             ;                    ROL                 /1+24
+00599  0CAC             ;                    ROL                 /1+32
+00600  0CAC             ;                    ROL                 /1+40
+00601  0CAC             ;                    ROL                 /1+48
+00602  0CAC             ;                    ROL                 /1+56
+00603  0CAC             ;                    ROL                 /1+64
+00604  0CAC             ;                    ROL                 /1+72
+00605  0CAC             ;                    ROL                 /1+80
+00606  0CAC             ;                    ROL                 /1+88
+00607  0CAC             ;                    ROL                 /1+96
+00608  0CAC             ;                    ROL                 /1+104
+00609  0CAC             ;                    ROL                 /1+112
+00610  0CAC             ;                    ROL                 /1+120
+00611  0CAC             ;                    ROL                 /1+128
+00612  0CAC             ;                    ROL                 /1+136
+00613  0CAC             ;                    ROL                 /1+144
+00614  0CAC             ;                    ROL                 /1+152
+00615  0CAC             ;                    ROL                 /1+160
+00616  0CAC             ;                    ROL                 /1+168
+00617  0CAC             ;                    ROL                 /1+176
+00618  0CAC             ;                    ROL                 /1+184
+00619  0CAC             ;                    ROL                 /1+192
+00620  0CAC             ;                    ROL                 /1+200
+00621  0CAC             ;                    ROL                 /1+208
+00622  0CAC             ;                    ROL                 /1+216
+00623  0CAC             ;                    ROL                 /1+224
+00624  0CAC             ;                    ROL                 /1+232
+00625  0CAC             ;                    ROL                 /1+240
+00626  0CAC             ;                    ROL                 /1+248
+00627  0CAC             ;                    ROL                 /1+256
+00628  0CAC             ;                    ROL                 /1+264
+00629  0CAC             ;                    ROL                 /1+272
+00630  0CAC             ;                    ROL                 /1+280
+00631  0CAC             ;                    ROL                 /1+288
+00632  0CAC             ;                    ROL                 /1+296
+00633  0CAC             ;                    ROL                 /1+304
+00634  0CAC             ;                    ROL                 /1+312
+00635  0CAC             ;                    ROL                 /1+320
+00636  0CAC             
+00637  0CAC             
+00638  0CAC                       
+00639  0CAC  08 05 0C   NEWMESSAGENULL 'HELLO THIS IS A MESSAGE FROM GRAY DEFENDER THIS IS MY MESSAGE WILL IT REPEAT            IT MIGHT!                           '
+00640  0D29  00 08 10   CHARLOW   BYTE $00,$08,$10,$18,$20,$28,$30,$38,$40,$48,$50,$58,$60,$68,$70,$78,$80,$88,$90,$98,$A0,$A8,$B0,$B8,$C0,$C8,$D0,$D8,$E0,$E8,$F0,$F8,$00,$08,$10,$18,$20,$28,$30,$38,$40,$48
+00641  0D53  32 32 32   CHARHI    BYTE >CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+2,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3,>CS+3
+00642  0D7D             
+00643  0D7D             
+00644  0D7D             
+00645  0D7D             
+00646  0D7D             
+00647  0D7D             
+00648  0D7D             
+00649  0D7D             
+00650  0D7D             
+00651  0D7D             
+00652  0D7D             
+00653  0D7D             
+00654  0D7D             
+00655  0D7D             
+
+******* 10 Label(s) *******
+Character_Set = $0810 
+charhi = $0D53 
+charlow = $0D29 
+delay = $0C9D 
+grab_next_char = $087A 
+loop = $082C 
+newmessage = $0CAC 
+shift_all_chars = $08A0 
+Shift_Once = $08B9 
+Smooth_Scroll = $0C95 
+
+******* 2 Unused label(s) *******
+@done
+@end_loop
+@inner
+@inner
+@inner2
+@keepgoing
+@loop
+@loop
+@loop1
+@loop2
+Character_Set
+delay
+
+******* 11 Variable(s) *******
+Const_Char1  = $3200
+Const_Char2  = $3201
+Const_Char3  = $3202
+Const_Char4  = $3203
+Const_Char5  = $3204
+Const_Char6  = $3205
+Const_Char7  = $3206
+Const_Char8  = $3207
+Const_StartLine  = $0400
+CS  = $3000
+tgt_c64  = $0001
+******* -8 Unused variables(s) *******
+Const_StartLine
+tgt_c64
+
