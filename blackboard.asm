@@ -160,7 +160,7 @@ DLOOP               lsr               TEMPA+1
                     adc               LINE              
                     sta               TEMPB             
                     lda               TEMPB+1           
-;adc               0                 
+                    adc               #0                 
                     sta               TEMPB+1           
 ; BYTE+TEMPA+TEMPB
                     clc
