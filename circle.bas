@@ -1,0 +1,63 @@
+1000 rem
+1100 rem goto 15
+1200 BASE=2*4092: POKE 53272,PEEK(53272)OR8
+1300 POKE 53265,PEEK(53265)OR32
+1400 FOR I=BASE TO BASE+7999:POKE I,0:NEXT
+1500 FOR I=1024 TO 2023:POKE I,16:NEXT I
+1600 REM GOTO 1160
+1700 x=0:  lx=x
+1800 y=rnd(1)*75: ly=y
+1900 xc=int(rnd(1)*280)+20
+2000 yc=int(rnd(1)*150)+30
+2100 sum=0
+2200 gosub 2400
+2300 goto 1700
+2400 rem
+2500 rem
+2600 if x>y then return
+2700 if x and 1 then gosub 3500
+2800 sum=sum + (x*2)+1
+2900 x=x+1
+3000 if sum>0 then gosub 3200
+3100 goto 2600
+3200 sum = sum - (y*2)-1
+3300 y=y-1
+3400 return
+3500 rem
+3600 lx=x/2
+3700 ly=(y+1)/2
+3800 gosub 4000
+3900 return
+4000 HPSN=lx+xc
+4100 VPSN=ly+yc
+4200 gosub 6600
+4300 HPSN=lx+xc
+4400 VPSN=yc-ly
+4500 gosub 6600
+4600 HPSN=xc-lx
+4700 VPSN=ly+yc
+4800 gosub 6600
+4900 HPSN=xc-lx
+5000 VPSN=yc-ly
+5100 gosub 6600
+5200 HPSN=xc+ly
+5300 VPSN=yc+lx
+5400 gosub 6600
+5500 HPSN=ly+xc
+5600 VPSN=yc-lx
+5700 gosub 6600
+5800 HPSN=xc-ly
+5900 VPSN=lx+yc
+6000 gosub 6600
+6100 HPSN=xc-ly
+6200 VPSN=yc-lx
+6300 gosub 6600
+6400 return
+6500 end
+6600  xx=INT(HPSN/8)
+6700  ROW=INT(VPSN/8)
+6800  LINE=VPSN AND 7
+6900  BYTE =BASE+ROW*320+8*xx+LINE
+7000  BIT=7-(HPSN AND 7)
+7100  POKE BYTE,PEEK(BYTE) or (2^BIT)
+7200  RETURN
