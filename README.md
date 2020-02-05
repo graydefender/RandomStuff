@@ -10,3 +10,5 @@ hires2.bas is a modification I made to hires.bas to just plot individual points
 Circle.bas is a further refinement of hires2.bas but to draw circles
 
 Circle.c,grafinit.c are C programs to draw a circle by plotting points originally developed in turboc
+
+bordereffects 1, 2, 3 - quick assembly programs to change colors along the edge of the text border of the screen
