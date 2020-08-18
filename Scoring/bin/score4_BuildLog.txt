@@ -1,0 +1,16 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+Writing prg file: C:\c64\My Source\Scoring\bin\score4.prg
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$080d Basic End
+  $080e-$0861 digits
+
+Writing Vice symbol file: C:\c64\My Source\Scoring\bin\score4.vs
+Writing Symbol file: score4.sym

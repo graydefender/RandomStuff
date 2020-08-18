@@ -1,0 +1,9 @@
+al C:80e .Digit
+al C:84b .Subvalue
+al C:843 .SubFromScore
+al C:816 ._Digit
+al C:829 .Add_To_Score
+al C:400 .Screen
+al C:8 .Num_Digits
+al C:816 .start
+al C:80b .upstartEnd

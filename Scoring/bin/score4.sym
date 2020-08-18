@@ -1,0 +1,8 @@
+.label Digit=$80e
+.label Subvalue=$84b
+.label SubFromScore=$843
+.label _Digit=$816
+.label Add_To_Score=$829
+.label Screen=$400
+.label Num_Digits=$8
+.label start=$816
