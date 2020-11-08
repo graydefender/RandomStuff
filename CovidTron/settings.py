@@ -1,0 +1,47 @@
+# Game Options and Settings
+TITLE = "COVID-O-TRON"
+ASSETS_FOLDER = "Assets"
+TEXT_FONT  = ASSETS_FOLDER + "\PressStart2P-vaV7.ttf"
+TITLE_FONT = ASSETS_FOLDER + "\PaintDropsRegular-0WaJo.ttf"
+TEXT_FONT2 = "Calibri" 
+
+COVID_IMAGE = ASSETS_FOLDER + "\covid.jpg"
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+FPS = 60
+
+# Define Colours
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+ORANGE = (255,165,0)
+PURPLE = (155,115,223)
+
+# Player Settings
+PLAYER_WIDTH = 25
+PLAYER_HEIGHT = 25
+PLAYER_SPEED = 4
+NUMBER_LIVES = 5
+FREE_MAN = 5000
+
+# Enemy Settings
+ENEMY_SPEED = 5
+ENEMY_GRANULARITY = 10
+ENEMY_STEPS_B4_CHDIR = 7
+ENEMY_HEIGHT = 15
+ENEMY_WIDTH = 20
+ENEMIES_PER_RND = 5   # Takes effect after ramp ups are over
+# Bullet Settings
+PROJECTILE_SPEED = 20
+PROJECTILE_WIDTH = 15
+PROJECTILE_HEIGHT = 15
+PROJECTILE_OFFSET = 4  # USED TO CENTER BULLET in relation to PLAYER sprite
+HUD_HEIGHT = 45
+
+# Levels that power ups appears on
+POWERUP1_LEVEL = 3   
+POWERUP2_LEVEL = 5
+POWERUP3_LEVEL = 7
