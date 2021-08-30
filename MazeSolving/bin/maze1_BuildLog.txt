@@ -1,0 +1,15 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+Writing prg file: C:\C64\OtherSource\MazeSolving\bin\maze1.prg
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$0cf8 Basic End
+
+Writing Vice symbol file: C:\C64\OtherSource\MazeSolving\bin\maze1.vs
+Writing Symbol file: maze1.sym

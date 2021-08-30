@@ -1,0 +1,17 @@
+parsing
+flex pass 1
+flex pass 2
+flex pass 3
+Output pass
+Writing prg file: C:\C64\OtherSource\MazeSolving\bin\maze4.prg
+
+Memory Map
+----------
+Default-segment:
+  $0801-$080c Basic
+  $080e-$095a Basic End
+  $2000-$203a Unnamed
+  $203b-$2549 MAZE HEIGHT
+
+Writing Vice symbol file: C:\C64\OtherSource\MazeSolving\bin\maze4.vs
+Writing Symbol file: maze4.sym

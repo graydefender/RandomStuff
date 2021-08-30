@@ -1,0 +1,35 @@
+.label gowest=$cbd {
+}
+.label color=$d800
+.label Set_Solved_Flag=$c5c
+.label scan=$c3e
+.label screen=$400
+.label main=$bf7
+.label maze=$80e
+.label screenl=$f9
+.label search=$c4d
+.label gonorth=$cd6 {
+}
+.label loop=$c1e
+.label find=$c34
+.label Mark_Visit=$c62
+.label colorl=$fb
+.label colorh=$fc
+.label mazel=$f7
+.label mazeh=$f8
+.label nodecp2=$d3d
+.label nodecp1=$d32
+.label maze_solved=$100
+.label stackl=$fd
+.label goeast=$c7f {
+}
+.label dojsr=$d13
+.label noincp1=$d1e
+.label stackh=$fe
+.label noincp2=$d27
+.label screenh=$fa
+.label gosouth=$c98 {
+}
+.label delay=$c79
+.label dorts=$d2a
+.label deadend=$cfb

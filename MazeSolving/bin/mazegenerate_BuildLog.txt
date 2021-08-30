@@ -1,0 +1,14 @@
+parsing
+flex pass 1
+flex pass 2
+Output pass
+Writing prg file: C:\C64\OtherSource\MazeSolving\bin\mazegenerate.prg
+
+Memory Map
+----------
+Default-segment:
+  $2000-$203a Unnamed
+  $203b-$2549 MAZE HEIGHT
+
+Writing Vice symbol file: C:\C64\OtherSource\MazeSolving\bin\mazegenerate.vs
+Writing Symbol file: mazegenerate.sym

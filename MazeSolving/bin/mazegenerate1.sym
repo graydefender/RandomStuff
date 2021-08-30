@@ -1,0 +1,69 @@
+.label DRAW_START_CHARS=$11c2 {
+}
+.label back_to_RND=$1140
+.label RAND=$116c
+.label Set_Up_Visit=$138d
+.label Set_Right_Visit=$1432
+.label Const_Width=$14a3
+.label CK_RIGHT_ONE=$1126 {
+}
+.label down=$12cc
+.label RANDOM_DIR=$10a8
+.label Init_Random=$115e
+.label loop=$1222
+.label Visits=$2400
+.label visit_left=$149d
+.label cont=$12d8
+.label map_vis_h=$14d8
+.label rnd_loop=$10ad
+.label visit_right=$149e
+.label loop2=$12da
+.label CK_UP_ONE=$10c6 {
+}
+.label index=$149a
+.label CK_DOWN_ONE=$10e6 {
+}
+.label done=$115d
+.label tempy=$1499
+.label invalid=$11bf
+.label DRAW_MAZE_BORDER=$121b
+.label Set_Visit_SUB=$1469 {
+}
+.label INIT_ALL_VARIABLES=$117d
+.label PUSH_STACK=$1009
+.label AFTER_POP=$1031
+.label EXIT_and_POP_STACK=$1143
+.label Set_Down_Visit=$13c4
+.label ok_To_Visit1=$1100
+.label ok_To_Visit0=$10e0
+.label Const_Height=$14a4
+.label ok_To_Visit3=$113a
+.label BEGIN=$1000
+.label ok_To_Visit2=$1120
+.label visit_down=$14a0
+.label dont_crash=$117c
+.label Z=$1498
+.label cmp_3=$10bf
+.label cmp_1=$10b7
+.label screenx=$149b
+.label cmp_2=$10bb
+.label screeny=$149c
+.label map_off_h=$14bf
+.label Const_ch=$14a5
+.label CHECK_VALID_X_Y=$11a6
+.label border_x=$14a1
+.label border_y=$14a2
+.label Set_Left_Visit=$13fb
+.label valid_xy=$1000
+.label rtn=$121a
+.label STACK_Y=$20a5
+.label _loop=$1196
+.label map_off_l=$14a6
+.label STACK_X=$2000
+.label CK_LEFT_ONE=$1106 {
+}
+.label x=$1496
+.label y=$1497
+.label visit_up=$149f
+.label return=$138c
+.label RND_VALUE=$1495

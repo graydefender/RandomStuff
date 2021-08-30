@@ -1,0 +1,141 @@
+Opening monitor command playback file: C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.vs
+ 
+*** VICE Version 3.5, rev 39512 ***
+ 
+Welcome to x64sc, the free portable C64 Emulator.
+ 
+Current VICE team members:
+Martin Pottendorfer, Marco van den Heuvel, Fabrizio Gennari, Groepaz, 
+Errol Smith, Ingo Korb, Olaf Seibert, Marcus Sutton, Kajtar Zsolt, AreaScout, 
+Bas Wassink, Michael C. Martin, Christopher Phillips, David Hogan, 
+Empathic Qubit, Roberto Muscedere.
+ 
+This is free software with ABSOLUTELY NO WARRANTY.
+See the "About VICE" command for more info.
+ 
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\kernal'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\basic'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\chargen'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\mps803'.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\mps803.vpl'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\nl10-cbm'.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\nl10.vpl'.
+NL10: Printer driver initialized.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\1520.vpl'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1540'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1541'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\d1541II'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1570'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1571'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1581'.
+DriveROM: Error - 2000 ROM image not found. Hardware-level 2000 emulation is not available.
+DriveROM: Error - 4000 ROM image not found. Hardware-level 4000 emulation is not available.
+DriveROM: Error - CMDHD ROM image not found. Hardware-level CMDHD emulation is not available.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos2031'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos2040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos3040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos4040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1001'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos9000'.
+Drive: Finished loading ROM images.
+VIC-II: Initializing chip model "MOS6569R3" (63 cycles per line, 312 raster lines).
+using GTK3 backend: DirectX
+Created render thread 0
+Render thread initialised
+Sound: Available sound devices: dx wmm dummy fs dump wav voc iff aiff soundmovie
+Keyboard: Loading keymap `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\gtk3_pos.vkm'.
+Keyboard: Warning - gtk3_pos.vkm: !LCBM !VCBM !LCTRL !VCTRL not defined.
+AUTOSTART: Autodetecting image type of `C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg'.
+Filesystem Image Probe: Error - Import GCR: Unknown GCR image version 32.
+Filesystem Image: Unknown disk image `C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg'.
+Tape: Error - Cannot open file `C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg'
+Error - CRT header invalid.
+CART: 'C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg' is not a valid CRT file.
+AUTOSTART: Loading PRG file `C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg' with direct RAM injection.
+AUTOSTART: Resetting the machine to autostart '*'
+VIC-II: VSP Bug: safe channels are: 03467. Emulation of memory corruption is disabled.
+AUTOSTART: `C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.prg' recognized as program/p00 file.
+Main CPU: starting at ($FFFC).
+Main CPU: RESET.
+Monitor playback command: al C:11c2 .DRAW_START_CHARS
+Monitor playback command: al C:1140 .back_to_RND
+Monitor playback command: al C:116c .RAND
+Monitor playback command: al C:138d .Set_Up_Visit
+Monitor playback command: al C:1432 .Set_Right_Visit
+Monitor playback command: al C:14a3 .Const_Width
+Monitor playback command: al C:1126 .CK_RIGHT_ONE
+Monitor playback command: al C:12cc .down
+Monitor playback command: al C:10a8 .RANDOM_DIR
+Monitor playback command: al C:115e .Init_Random
+Monitor playback command: al C:1222 .loop
+Monitor playback command: al C:2400 .Visits
+Monitor playback command: al C:149d .visit_left
+Monitor playback command: al C:12d8 .cont
+Monitor playback command: al C:14d8 .map_vis_h
+Monitor playback command: al C:10ad .rnd_loop
+Monitor playback command: al C:149e .visit_right
+Monitor playback command: al C:12da .loop2
+Monitor playback command: al C:10c6 .CK_UP_ONE
+Monitor playback command: al C:149a .index
+Monitor playback command: al C:10e6 .CK_DOWN_ONE
+Monitor playback command: al C:115d .done
+Monitor playback command: al C:1499 .tempy
+Monitor playback command: al C:11bf .invalid
+Monitor playback command: al C:121b .DRAW_MAZE_BORDER
+Monitor playback command: al C:1469 .Set_Visit_SUB
+Monitor playback command: al C:117d .INIT_ALL_VARIABLES
+Monitor playback command: al C:1009 .PUSH_STACK
+Monitor playback command: al C:1031 .AFTER_POP
+Monitor playback command: al C:1143 .EXIT_and_POP_STACK
+Monitor playback command: al C:13c4 .Set_Down_Visit
+Monitor playback command: al C:1100 .ok_To_Visit1
+Monitor playback command: al C:10e0 .ok_To_Visit0
+Monitor playback command: al C:14a4 .Const_Height
+Monitor playback command: al C:113a .ok_To_Visit3
+Monitor playback command: al C:1000 .BEGIN
+Monitor playback command: al C:1120 .ok_To_Visit2
+Monitor playback command: al C:14a0 .visit_down
+Monitor playback command: al C:117c .dont_crash
+Monitor playback command: al C:1498 .Z
+Monitor playback command: al C:10bf .cmp_3
+Monitor playback command: al C:10b7 .cmp_1
+Monitor playback command: al C:149b .screenx
+Monitor playback command: al C:10bb .cmp_2
+Monitor playback command: al C:149c .screeny
+Monitor playback command: al C:14bf .map_off_h
+Monitor playback command: al C:14a5 .Const_ch
+Monitor playback command: al C:11a6 .CHECK_VALID_X_Y
+Monitor playback command: al C:14a1 .border_x
+Monitor playback command: al C:14a2 .border_y
+Monitor playback command: al C:13fb .Set_Left_Visit
+Monitor playback command: al C:1000 .valid_xy
+Monitor playback command: al C:121a .rtn
+Monitor playback command: al C:20a5 .STACK_Y
+Monitor playback command: al C:1196 ._loop
+Monitor playback command: al C:14a6 .map_off_l
+Monitor playback command: al C:2000 .STACK_X
+Monitor playback command: al C:1106 .CK_LEFT_ONE
+Monitor playback command: al C:1496 .x
+Monitor playback command: al C:1497 .y
+Monitor playback command: al C:149f .visit_up
+Monitor playback command: al C:138c .return
+Monitor playback command: al C:1495 .RND_VALUE
+Closed monitor command playback file: C:\C64\OtherSource\MazeSolving/bin/mazegenerate1.vs
+Sound: Opened device `dx', speed 44100Hz, fragment size 2.90ms, buffer size 101.59ms
+reSID: MOS6581, filter on, sampling rate 44100Hz - fast
+AUTOSTART: Injecting program data at $1000 (size $1600)
+AUTOSTART: Ready
+AUTOSTART: Starting program.
+AUTOSTART: Restoring FileSystemDevice8 to 1.
+AUTOSTART: Restoring FSDevice8ConvertP00 to 1.
+AUTOSTART: Done.
+Initiating render thread 0 shutdown
+Joining render thread 0 ...
+Render thread shutdown
+Joined render thread 0.
+VICE thread initiating shutdown
+VICE thread is exiting
+VICE thread has been joined.
+Writing configuration file `C:\Users\GrayDefender\AppData\Roaming\vice\vice.ini'.
+VIC-II: VSP Bug: safe channels are: 12356. Emulation of memory corruption is disabled.
+Sound: Closing device `dx'

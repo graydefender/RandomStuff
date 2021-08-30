@@ -1,0 +1,13 @@
+parsing
+flex pass 1
+flex pass 2
+Output pass
+Writing prg file: C:\C64\OtherSource\MazeSolving\bin\glenn.prg
+
+Memory Map
+----------
+Default-segment:
+  $1000-$100d Unnamed
+
+Writing Vice symbol file: C:\C64\OtherSource\MazeSolving\bin\glenn.vs
+Writing Symbol file: glenn.sym

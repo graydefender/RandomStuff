@@ -1,0 +1,32 @@
+<C64debugger version="1.0">
+   <Sources values="INDEX,FILE">
+      0,KickAss.jar:/include/autoinclude.asm
+      1,C:\C64\OtherSource\MazeSolving\glenn.asm
+   </Sources>
+
+   <Segment name="Default" dest="" values="START,END,FILE_IDX,LINE1,COL1,LINE2,COL2">
+      <Block name="Unnamed">
+         $1000,$1000,1,6,21,6,23
+         $1001,$1003,1,7,21,7,23
+         $1004,$1006,1,8,21,8,23
+         $1007,$1009,1,9,21,9,23
+         $100a,$100a,1,15,3,15,5
+         $100b,$100b,1,18,8,18,12
+         $100c,$100c,1,19,8,19,12
+         $100d,$100d,1,20,8,20,12
+      </Block>
+   </Segment>
+
+   <Labels values="SEGMENT,ADDRESS,NAME,START,END,FILE_IDX,LINE1,COL1,LINE2,COL2">
+      Default,$100b,x,1,18,1,18,2
+      Default,$100c,y,1,19,1,19,2
+      Default,$100d,z,1,20,1,20,2
+   </Labels>
+
+   <Breakpoints values="SEGMENT,ADDRESS,ARGUMENT">
+   </Breakpoints>
+
+   <Watchpoints values="SEGMENT,ADDRESS1,ADDRESS2,ARGUMENT">
+   </Watchpoints>
+
+</C64debugger>

@@ -1,0 +1,27 @@
+.label mazel=$fb
+.label gowest=$cab {
+}
+.label color=$d800
+.label mazeh=$fc
+.label Set_Solved_Flag=$c51
+.label maze_solved=$8d
+.label scan=$c35
+.label screen=$400
+.label main=$bf7
+.label goeast=$c73 {
+}
+.label maze=$80e
+.label screenh=$fe
+.label gosouth=$c89 {
+}
+.label screenl=$fd
+.label search=$c44
+.label delay=$c6d
+.label gonorth=$cc1 {
+}
+.label loop=$c15
+.label find=$c2b
+.label Mark_Visit=$c56
+.label colorl=$8b
+.label deadend=$ce3
+.label colorh=$8c

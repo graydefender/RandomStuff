@@ -1,0 +1,15 @@
+parsing
+flex pass 1
+flex pass 2
+Output pass
+Writing prg file: C:\C64\OtherSource\MazeSolving\bin\mazegenerate1.prg
+
+Memory Map
+----------
+Default-segment:
+  $1000-$14f0 Unnamed
+  $2000-$2149 Unnamed
+  $2400-$25ff Unnamed
+
+Writing Vice symbol file: C:\C64\OtherSource\MazeSolving\bin\mazegenerate1.vs
+Writing Symbol file: mazegenerate1.sym

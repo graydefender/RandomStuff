@@ -1,0 +1,109 @@
+Opening monitor command playback file: C:\C64\OtherSource\MazeSolving/bin/maze3.vs
+ 
+*** VICE Version 3.5, rev 39512 ***
+ 
+Welcome to x64sc, the free portable C64 Emulator.
+ 
+Current VICE team members:
+Martin Pottendorfer, Marco van den Heuvel, Fabrizio Gennari, Groepaz, 
+Errol Smith, Ingo Korb, Olaf Seibert, Marcus Sutton, Kajtar Zsolt, AreaScout, 
+Bas Wassink, Michael C. Martin, Christopher Phillips, David Hogan, 
+Empathic Qubit, Roberto Muscedere.
+ 
+This is free software with ABSOLUTELY NO WARRANTY.
+See the "About VICE" command for more info.
+ 
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\kernal'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\basic'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\chargen'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\mps803'.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\mps803.vpl'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\nl10-cbm'.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\nl10.vpl'.
+NL10: Printer driver initialized.
+Palette: Loading palette `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\PRINTER\1520.vpl'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1540'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1541'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\d1541II'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1570'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1571'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1581'.
+DriveROM: Error - 2000 ROM image not found. Hardware-level 2000 emulation is not available.
+DriveROM: Error - 4000 ROM image not found. Hardware-level 4000 emulation is not available.
+DriveROM: Error - CMDHD ROM image not found. Hardware-level CMDHD emulation is not available.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos2031'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos2040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos3040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos4040'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos1001'.
+Loading system file `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\DRIVES\dos9000'.
+Drive: Finished loading ROM images.
+VIC-II: Initializing chip model "MOS6569R3" (63 cycles per line, 312 raster lines).
+using GTK3 backend: DirectX
+Created render thread 0
+Render thread initialised
+Sound: Available sound devices: dx wmm dummy fs dump wav voc iff aiff soundmovie
+Keyboard: Loading keymap `C:\C64\Tools\GTK3VICE-3.5-win64\bin\..\C64\gtk3_pos.vkm'.
+Keyboard: Warning - gtk3_pos.vkm: !LCBM !VCBM !LCTRL !VCTRL not defined.
+AUTOSTART: Autodetecting image type of `C:\C64\OtherSource\MazeSolving/bin/maze3.prg'.
+Filesystem Image Probe: Error - Import GCR: Unknown GCR image version 48.
+Filesystem Image: Unknown disk image `C:\C64\OtherSource\MazeSolving/bin/maze3.prg'.
+Tape: Error - Cannot open file `C:\C64\OtherSource\MazeSolving/bin/maze3.prg'
+Error - CRT header invalid.
+CART: 'C:\C64\OtherSource\MazeSolving/bin/maze3.prg' is not a valid CRT file.
+AUTOSTART: Loading PRG file `C:\C64\OtherSource\MazeSolving/bin/maze3.prg' with direct RAM injection.
+AUTOSTART: Resetting the machine to autostart '*'
+VIC-II: VSP Bug: safe channels are: 0125. Emulation of memory corruption is disabled.
+AUTOSTART: `C:\C64\OtherSource\MazeSolving/bin/maze3.prg' recognized as program/p00 file.
+Main CPU: starting at ($FFFC).
+Main CPU: RESET.
+Monitor playback command: al C:cbd .gowest
+Monitor playback command: al C:d800 .color
+Monitor playback command: al C:c5c .Set_Solved_Flag
+Monitor playback command: al C:c3e .scan
+Monitor playback command: al C:400 .screen
+Monitor playback command: al C:80b .upstartEnd
+Monitor playback command: al C:bf7 .main
+Monitor playback command: al C:80e .maze
+Monitor playback command: al C:f9 .screenl
+Monitor playback command: al C:c4d .search
+Monitor playback command: al C:cd6 .gonorth
+Monitor playback command: al C:c1e .loop
+Monitor playback command: al C:c34 .find
+Monitor playback command: al C:c62 .Mark_Visit
+Monitor playback command: al C:fb .colorl
+Monitor playback command: al C:fc .colorh
+Monitor playback command: al C:f7 .mazel
+Monitor playback command: al C:f8 .mazeh
+Monitor playback command: al C:d3d .nodecp2
+Monitor playback command: al C:d32 .nodecp1
+Monitor playback command: al C:100 .maze_solved
+Monitor playback command: al C:fd .stackl
+Monitor playback command: al C:c7f .goeast
+Monitor playback command: al C:d13 .dojsr
+Monitor playback command: al C:d1e .noincp1
+Monitor playback command: al C:fe .stackh
+Monitor playback command: al C:d27 .noincp2
+Monitor playback command: al C:fa .screenh
+Monitor playback command: al C:c98 .gosouth
+Monitor playback command: al C:c79 .delay
+Monitor playback command: al C:d2a .dorts
+Monitor playback command: al C:cfb .deadend
+Closed monitor command playback file: C:\C64\OtherSource\MazeSolving/bin/maze3.vs
+Sound: Opened device `dx', speed 44100Hz, fragment size 2.90ms, buffer size 101.59ms
+reSID: MOS6581, filter on, sampling rate 44100Hz - fast
+AUTOSTART: Injecting program data at $0801 (size $0542)
+AUTOSTART: Ready
+AUTOSTART: Starting program.
+AUTOSTART: Restoring FileSystemDevice8 to 1.
+AUTOSTART: Restoring FSDevice8ConvertP00 to 1.
+AUTOSTART: Done.
+Initiating render thread 0 shutdown
+Joining render thread 0 ...
+Render thread shutdown
+Joined render thread 0.
+VICE thread initiating shutdown
+VICE thread is exiting
+VICE thread has been joined.
+VIC-II: VSP Bug: safe channels are: 01235. Emulation of memory corruption is disabled.
+Sound: Closing device `dx'
