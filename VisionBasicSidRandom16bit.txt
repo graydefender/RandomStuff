@@ -1,0 +1,24 @@
+10 clr:y=100
+15 initrand
+20 bitmap1,0,5,5,3,1,0,0,1,1
+30 limits320,200,0,0
+32 randhi:x=rn
+35 if x>320then 32
+37 randhi
+38 ifrn>200then 37
+40 plotx,rn,1
+50 getm:if m=0 then 32
+200 bitmap0,0,0,5:vidloc 1
+999 end
+2000 proc initrand
+2010 [lda #$ff:sta$d40e:sta$d40f
+2020 [lda #$80:sta$d412
+2030 return
+3000 proc randhi
+3010 [lda$d41b
+3020 [starn:nop:nop:nop:nop
+3030 [lda$d41b
+3035 [and #1
+3040 [starn+1]
+3050 [rts
+
